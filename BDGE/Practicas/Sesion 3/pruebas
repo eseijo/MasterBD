@@ -1,0 +1,55 @@
+import numpy as np
+
+db.posts.aggregate([{'$match': {'$and': [{'PostTypeId': 2}, {'OwnerUserId': {'$ne': None}}]}}, 
+                    {'$group': {'_id': '$OwnerUserId', 'num_ans': {'$sum': 1}}}, 
+                    {'$out': 'ans_res'}])
+
+l = db.posts.aggregate([{'$match': {'$and': [{'PostTypeId': 1}, {'OwnerUserId': {'$ne': None}}]}},
+                    {'$lookup': {
+                       'from': 'ans_res',
+                        'localField': 'OwnerUserId',
+                        'foreignField': '_id',
+                        'as': 'answer'
+                    }},
+                    {'$project': {
+                        'OwnerUserId': True,
+                        'answers': {'$ifNull': [{'$arrayElemAt' : ['$answer.num_ans', 0]}, 0]},
+                    }},
+                    {'$group': {
+                        '_id': '$OwnerUserId', 
+                        'answers': {'$first': '$answers'}, 
+                        'posts': {'$sum': 1}
+                    }},
+                    {'$project': {
+                        'percentage': {'$divide': [{'$multiply': ['$answers', 100]}, {'$add': ['$answers', '$posts']}]}
+                    }},
+                    {'$project': {
+                        'position': {
+                            '$switch': {
+                               'branches': [
+                                  { 'case': {'$and': [{'$gte': ['$percentage', 0]}, {'$lt': ['$percentage', 1]}]}, 'then': 0},
+                                  { 'case': {'$gte': ['$percentage', 99]}, 'then': 11}
+                               ],
+                               'default': {'$add': [{'$trunc': {'$divide': ['$percentage', 10]}}, 1]}
+                            }
+                        }
+                    }}])
+
+posts_ans_df = pd.DataFrame(list(l))
+
+bins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+ax = posts_ans_df.plot(kind = 'hist', x = '_id', y = 'position', figsize=(15,15*2/3), color = 'blue', histtype='bar', ec='white', bins = bins)
+
+ax.invert_xaxis()
+
+bin_centers = 0.5 * np.diff(bins) + bins[:-1]
+perc_labels = {0: '0%', 1: '1%-9%', 2: '10%-19%', 3: '20%-29%', 4: '30%-39%', 5: '40%-49%', 6: '50%-59%', 7: '60%-69%', 8: '70%-79%', 9: '80%-89%', 10: '90%-99%', 11: '100%'}
+for perc_value, x in zip(bins, bin_centers):
+    ax.annotate(perc_labels[perc_value], xy=(x, 0), xycoords=('data', 'axes fraction'),
+        xytext=(0, -32), textcoords='offset points', va='top', ha='center')
+
+
+
+{'$and': [{'PostTypeId': 1}, {'OwnerUserId': {'$ne': None}}]}
+
+{'$match': {'$and': [{'PostTypeId': 1}, {'OwnerUserId': {'$ne': None}}]}},

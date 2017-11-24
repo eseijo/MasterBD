@@ -1,0 +1,42 @@
+<Schema name="inbd26">
+  <Cube name="inbd26 T1" visible="true" cache="false" enabled="true">
+    <Table name="dw_fact_ingreso" schema="dw_ingresos">
+    </Table>
+    <Dimension type="StandardDimension" visible="true" foreignKey="fk_procedencia" highCardinality="false" name="Procedence" caption="Procedence">
+      <Hierarchy name="Procedence" visible="true" hasAll="true" allMemberCaption="AllProcedences" allLevelName="AllLevels" primaryKey="pk_procedencia" caption="ProcedenceCaption">
+        <Table name="dw_dim_proc" schema="dw_ingresos">
+        </Table>
+        <Level name="ProcedenceLevelService" visible="true" table="dw_dim_proc" column="servicio_procedencia" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Nivel Procedencia">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="TimeDimension" visible="true" foreignKey="fk_tiempo" highCardinality="false" name="Time" caption="Time">
+      <Hierarchy name="Time" visible="true" hasAll="true" allMemberName="All" allMemberCaption="AllCap" allLevelName="AllLevelName" primaryKey="pk_tiempo" caption="TiemCap">
+        <Table name="dw_dim_time" schema="dw_ingresos">
+        </Table>
+        <Level name="Year" visible="true" column="anno" type="Integer" uniqueMembers="true" levelType="TimeYears" hideMemberIf="Never" caption="Year">
+        </Level>
+        <Level name="Month" visible="true" column="mes" ordinalColumn="mes" type="String" uniqueMembers="true" levelType="TimeMonths" hideMemberIf="Never" caption="Months">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="StandardDimension" visible="true" foreignKey="fk_tipo_ingreso" highCardinality="false" name="AdmissionType" caption="AdmissionType">
+      <Hierarchy name="AdmissionType" visible="true" hasAll="true" allMemberName="All" allMemberCaption="AllCap" allLevelName="AllLevelName" primaryKey="pk_tipo_ingreso" caption="TipoIngresoCap">
+        <Table name="dw_dim_tipoingreso" schema="dw_ingresos">
+        </Table>
+        <Level name="AdmissionTypeLevel" visible="true" column="tipo" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Tipo admision">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="StandardDimension" visible="true" foreignKey="fk_paciente" highCardinality="false" name="Patient" caption="Patient">
+      <Hierarchy name="Sex" visible="true" hasAll="true" allMemberName="All" allMemberCaption="AllCap" allLevelName="AllLevelName" primaryKey="pk_paciente" caption="SexCap">
+        <Table name="dw_dim_paciente" schema="dw_ingresos">
+        </Table>
+        <Level name="SexLevel" visible="true" column="sexo" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Sexo">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Measure name="Duracion" column="duracion" datatype="Numeric" aggregator="avg" caption="Length of stay" visible="true">
+    </Measure>
+  </Cube>
+</Schema>

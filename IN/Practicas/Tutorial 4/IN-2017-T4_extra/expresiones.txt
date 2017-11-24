@@ -1,0 +1,21 @@
+
+// Slide 10
+
+
+${pathPrescription}/DICCIONARIO_VIAS_ADMINISTRACION.xml
+
+
+// Slide 23. JAVA SCRIPT
+
+var regularExpressionTime = new RegExp("([01]?[0-9]|2[0-3]):[0-5][0-9]");
+
+
+// Slide 24. JAVA SCRIPT
+
+correctTime = regularExpressionTime.test(prescription_time);
+
+if (!correctTime) {
+	Alert("Unvalid time:" + prescription_time); // Debug
+	_step_.putError(getInputRowMeta(), row, e.nr_errors, e.message, e.field, e.errcode);
+    trans_Status = ERROR_TRANSOFRMATION; // Raise error for manager
+}
